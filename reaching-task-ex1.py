@@ -10,9 +10,9 @@ from datetime import datetime
 from sympy import false
 
 # Game parameters
-SCREEN_X, SCREEN_Y = 3840, 2160 # your screen resolution
+SCREEN_X, SCREEN_Y = 2800, 1800 # your screen resolution
 WIDTH, HEIGHT = SCREEN_X // 1.5  , SCREEN_Y // 1.5 # be aware of monitor scaling on windows (150%)
-CIRCLE_SIZE = 20
+CIRCLE_SIZE = 25
 TARGET_SIZE = CIRCLE_SIZE
 TARGET_RADIUS = 300
 MASK_RADIUS = 0.66 * TARGET_RADIUS
@@ -132,7 +132,7 @@ while running:
 
     # Calculate distance from START_POSITION to mouse_pos
     deltax = mouse_pos[0] - START_POSITION[0]
-    deltay = HEIGHT - mouse_pos[1] - START_POSITION[1]
+    deltay = mouse_pos[1] - START_POSITION[1]
     distance = math.hypot(deltax, deltay)
     mouse_angle = math.atan2(deltay, deltax)
 
