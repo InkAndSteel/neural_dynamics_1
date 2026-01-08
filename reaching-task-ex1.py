@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import csv
 from datetime import datetime
 
+from sympy import false
+
 # Game parameters
 SCREEN_X, SCREEN_Y = 3840, 2160 # your screen resolution
 WIDTH, HEIGHT = SCREEN_X // 1.5  , SCREEN_Y // 1.5 # be aware of monitor scaling on windows (150%)
@@ -157,8 +159,11 @@ while running:
         attempts += 1
 
         # CALCULATE AND SAVE ERRORS between target and circle end position for a hit
-        error_angle = 0.0
-        error_angles.append(error_angle)
+        error_angle = 0
+        if( move_faster == False):
+            error_angles.append(error_angle)
+        else:
+            error_angles.append(float('nan'))
 
         new_target = None  # Set target to None to indicate hit
         start_time = 0  # Reset start_time after hitting the target
@@ -173,7 +178,10 @@ while running:
         end_angle = math.atan2(circle_pos[1] - START_POSITION[1], circle_pos[0] - START_POSITION[0])
         error_angle = (end_angle - target_angle + math.pi) % (2 * math.pi) - math.pi
         error_angle = math.degrees(error_angle)
-        error_angles.append(error_angle)
+        if( move_faster == False):
+            error_angles.append(error_angle)
+        else:
+            error_angles.append(float('nan'))
 
         new_target = None  # Set target to None to indicate miss
         start_time = 0  # Reset start_time after missing the target
