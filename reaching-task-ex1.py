@@ -4,6 +4,8 @@ import random
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import csv
+from datetime import datetime
 
 # Game parameters
 SCREEN_X, SCREEN_Y = 3840, 2160 # your screen resolution
@@ -128,7 +130,7 @@ while running:
 
     # Calculate distance from START_POSITION to mouse_pos
     deltax = mouse_pos[0] - START_POSITION[0]
-    deltay = mouse_pos[1] - START_POSITION[1]
+    deltay = HEIGHT - mouse_pos[1] - START_POSITION[1]
     distance = math.hypot(deltax, deltay)
     mouse_angle = math.atan2(deltay, deltax)
 
@@ -155,7 +157,7 @@ while running:
         attempts += 1
 
         # CALCULATE AND SAVE ERRORS between target and circle end position for a hit
-        error_angle = float("NaN")
+        error_angle = 0.0
         error_angles.append(error_angle)
 
         new_target = None  # Set target to None to indicate hit
@@ -167,8 +169,10 @@ while running:
     elif new_target and math.hypot(circle_pos[0] - START_POSITION[0], circle_pos[1] - START_POSITION[1]) > TARGET_RADIUS*1.01:
         attempts += 1
 
-        # TODO: CALCULATE AND SAVE ERRORS between target and circle end position for a miss
-        error_angle = float("NaN")
+        target_angle = math.atan2(new_target[1] - START_POSITION[1], new_target[0] - START_POSITION[0])
+        end_angle = math.atan2(circle_pos[1] - START_POSITION[1], circle_pos[0] - START_POSITION[0])
+        error_angle = (end_angle - target_angle + math.pi) % (2 * math.pi) - math.pi
+        error_angle = math.degrees(error_angle)
         error_angles.append(error_angle)
 
         print("errors: ", error_angles)
@@ -227,9 +231,13 @@ while running:
         mouse_info_text = font.render(f"Mouse: x={mouse_pos[0]}, y={mouse_pos[1]}", True, WHITE)
         delta_info_text = font.render(f"Delta: Δx={deltax}, Δy={deltay}", True, WHITE)
         mouse_angle_text = font.render(f"Mouse_Ang: {np.rint(np.degrees(mouse_angle))}", True, WHITE)
+        if error_angles:
+            last_error_text = font.render(f"Last_Error: {np.rint(error_angles[-1])}", True, WHITE)
         screen.blit(mouse_info_text, (10, 60))
         screen.blit(delta_info_text, (10, 90))
         screen.blit(mouse_angle_text, (10, 120))
+        if error_angles:
+            screen.blit(last_error_text, (10, 150))
 
     # Update display
     pygame.display.flip()
@@ -239,5 +247,12 @@ while running:
 pygame.quit()
 
 ## TASK 2, CALCULATE, PLOT AND SAVE (e.g. export as .csv) ERRORS from error_angles
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+csv_name = f"{timestamp}.csv"
+with open(csv_name, "w", newline="") as csv_file:
+    writer = csv.writer(csv_file)
+    writer.writerow(["error_angle_deg"])
+    for angle in error_angles:
+        writer.writerow([angle])
 
 sys.exit()
