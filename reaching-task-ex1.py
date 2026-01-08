@@ -138,16 +138,23 @@ while running:
 
     # TASK1: CALCULATE perturbed_mouse_pos
     # PRESS 'h' in game for a hint
+    def to_cartesian(angle, radius):
+        return (START_POSITION[0] + radius * math.cos(angle), START_POSITION[1] + radius * math.sin(angle))
+
     if perturbation_mode:
         if perturbation_type == 'sudden':
             #sudden clockwise perturbation of perturbation_angle
-            perturbed_mouse_angle = []
+            perturbed_mouse_angle = (mouse_angle - perturbation_angle)
 
         elif perturbation_type == 'gradual':
             #gradual counterclockwise perturbation of perturbation_angle in 10 steps, with perturbation_angle/10, each step lasts 3 attempts
-            perturbed_mouse_angle = []
+            current_step = min(math.ceil(gradual_attempts/3), 10)
+            angle_per_step = perturbation_angle / 10
+            current_shift = current_step * angle_per_step
 
-        perturbed_mouse_pos = []
+            perturbed_mouse_angle = mouse_angle + current_shift
+
+        perturbed_mouse_pos = to_cartesian(perturbed_mouse_angle, distance)
         circle_pos = perturbed_mouse_pos
     else:
         circle_pos = pygame.mouse.get_pos()
@@ -237,13 +244,16 @@ while running:
         mouse_info_text = font.render(f"Mouse: x={mouse_pos[0]}, y={mouse_pos[1]}", True, WHITE)
         delta_info_text = font.render(f"Delta: Δx={deltax}, Δy={deltay}", True, WHITE)
         mouse_angle_text = font.render(f"Mouse_Ang: {np.rint(np.degrees(mouse_angle))}", True, WHITE)
+        circle_angle_text = font.render(f"Circle_Ang: {np.rint(np.degrees(math.atan2(circle_pos[1] - START_POSITION[1], circle_pos[0] - START_POSITION[0])))}", True, WHITE)
+
         if error_angles:
             last_error_text = font.render(f"Last_Error: {np.rint(error_angles[-1])}", True, WHITE)
         screen.blit(mouse_info_text, (10, 60))
         screen.blit(delta_info_text, (10, 90))
         screen.blit(mouse_angle_text, (10, 120))
+        screen.blit(circle_angle_text, (10, 150))
         if error_angles:
-            screen.blit(last_error_text, (10, 150))
+            screen.blit(last_error_text, (10, 180))
 
     # Update display
     pygame.display.flip()
