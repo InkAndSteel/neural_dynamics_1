@@ -175,8 +175,6 @@ while running:
         error_angle = math.degrees(error_angle)
         error_angles.append(error_angle)
 
-        print("errors: ", error_angles)
-
         new_target = None  # Set target to None to indicate miss
         start_time = 0  # Reset start_time after missing the target
 
