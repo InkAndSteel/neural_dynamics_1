@@ -22,6 +22,9 @@ data_array <- array(combined_data,
 df_long <- melt(data_array, varnames = c("time", "condition", "mask_state"), value.name = "error_angle")
 df_long$condition <- factor(df_long$condition, levels = conditions)
 
+apply(data_array, c(2,3), mean, na.rm = T)
+
+
 # --- 2. STATISTICAL CALCULATIONS ---
 
 # TEST A: Mask Effect (With vs Without Mask)
