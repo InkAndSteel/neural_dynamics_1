@@ -16,11 +16,11 @@ CIRCLE_SIZE = 25
 TARGET_SIZE = CIRCLE_SIZE
 TARGET_RADIUS = 300
 MASK_RADIUS = 0.66 * TARGET_RADIUS
-ATTEMPTS_LIMIT = 200
 START_POSITION = (WIDTH // 2, HEIGHT // 2)
 START_ANGLE = 0
 PERTURBATION_ANGLE= 30
 TIME_LIMIT = 1000 # time limit in ms
+BASELINE = False
 
 # Colors
 WHITE = (255, 255, 255)
@@ -109,21 +109,49 @@ while running:
             elif event.key == pygame.K_h:  # Press 'h' to toggle mouse info display
                 show_mouse_info = not show_mouse_info
 
-    # Design experiment
-    if attempts == 1:
-        perturbation_mode = False
-    elif attempts == 40:
-        perturbation_mode = True
-        perturbation_type = 'gradual'
-    elif attempts == 80:
-        perturbation_mode = False
-    elif attempts == 120:
-        perturbation_mode = True
-        perturbation_type = 'sudden'
-    elif attempts == 160:
-        perturbation_mode = False
-    elif attempts >= ATTEMPTS_LIMIT:
-        running = False
+    if BASELINE:
+        # Design experiment
+        if attempts == 1:
+            perturbation_mode = False
+        elif attempts == 20:
+            perturbation_mode = True
+            perturbation_type = 'sudden'
+        elif attempts == 80:
+            perturbation_mode = False
+        elif attempts == 100:
+            perturbation_mode = True
+            perturbation_type = 'sudden'
+        elif attempts == 160:
+            running = False
+    else:
+        if attempts == 1:
+            perturbation_mode = False
+        elif attempts == 20: # black
+            # Target angle 1
+            perturbation_mode = True
+            perturbation_type = 'sudden'
+        elif attempts == 80:
+            perturbation_mode = False
+        elif attempts == 120:  # green
+            # Target angle 2
+            perturbation_mode = True
+            perturbation_type = 'sudden'
+        elif attempts == 180:
+            perturbation_mode = False
+        elif attempts == 220: # blue
+            # Target angle 3
+            perturbation_mode = True
+            perturbation_type = 'sudden'
+        elif attempts == 280:
+            perturbation_mode = False
+        elif attempts == 320:  # orange
+            # Target angle 4
+            perturbation_mode = True
+            perturbation_type = 'sudden'
+        elif attempts == 380:
+            perturbation_mode = False
+        elif attempts == 400:
+            running = false
 
     # Hide the mouse cursor
     pygame.mouse.set_visible(False)
@@ -166,12 +194,14 @@ while running:
         attempts += 1
 
         # CALCULATE AND SAVE ERRORS between target and circle end position for a hit
-        error_angle = 0
+        target_angle = math.atan2(new_target[1] - START_POSITION[1], new_target[0] - START_POSITION[0])
+        end_angle = math.atan2(circle_pos[1] - START_POSITION[1], circle_pos[0] - START_POSITION[0])
+        error_angle = (end_angle - target_angle + math.pi) % (2 * math.pi) - math.pi
+        error_angle = math.degrees(error_angle)
         if( move_faster == False):
             error_angles.append(error_angle)
         else:
             error_angles.append(float('nan'))
-
         new_target = None  # Set target to None to indicate hit
         start_time = 0  # Reset start_time after hitting the target
         if perturbation_type == 'gradual' and perturbation_mode:
