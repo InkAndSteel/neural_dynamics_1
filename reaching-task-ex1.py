@@ -10,6 +10,7 @@ from datetime import datetime
 from sympy import false
 
 # Game parameters
+TARGET_ANGLE = None
 SCREEN_X, SCREEN_Y = 2800, 1800 # your screen resolution
 WIDTH, HEIGHT = SCREEN_X // 1.5  , SCREEN_Y // 1.5 # be aware of monitor scaling on windows (150%)
 CIRCLE_SIZE = 25
@@ -65,8 +66,10 @@ error_angles = []  # List to store error angles
 show_mouse_info = False
 
 # Function to generate a new target position
-def generate_target_position():
-    if target_mode == 'random':
+def generate_target_position(fixed_angle=None):
+    if fixed_angle is not None:
+        angle=fixed_angle;
+    elif target_mode == 'random':
         angle = random.uniform(0, 2 * math.pi)
 
     elif target_mode == 'fix':
@@ -111,7 +114,7 @@ while running:
 
     if BASELINE:
         # Design experiment
-        if attempts == 1:
+        if attempts == 0:
             perturbation_mode = False
         elif attempts == 20:
             perturbation_mode = True
@@ -124,7 +127,8 @@ while running:
         elif attempts == 160:
             running = False
     else:
-        if attempts == 1:
+        if attempts == 0:
+            TARGET_ANGLE = math.radians(30)
             perturbation_mode = False
         elif attempts == 20: # black
             # Target angle 1
@@ -132,18 +136,24 @@ while running:
             perturbation_type = 'sudden'
         elif attempts == 80:
             perturbation_mode = False
+        elif attempts == 100:
+            TARGET_ANGLE = math.radians(70)
         elif attempts == 120:  # green
             # Target angle 2
             perturbation_mode = True
             perturbation_type = 'sudden'
         elif attempts == 180:
             perturbation_mode = False
+        elif attempts == 200:
+            TARGET_ANGLE = math.radians(50)
         elif attempts == 220: # blue
             # Target angle 3
             perturbation_mode = True
             perturbation_type = 'sudden'
         elif attempts == 280:
             perturbation_mode = False
+        elif attempts == 300:
+            TARGET_ANGLE = math.radians(120)
         elif attempts == 320:  # orange
             # Target angle 4
             perturbation_mode = True
@@ -228,7 +238,7 @@ while running:
 
     # Check if player moved to the center and generate new target
     if not new_target and at_start_position_and_generate_target(mouse_pos):
-        new_target = generate_target_position()
+        new_target = generate_target_position(TARGET_ANGLE)
         move_faster = False
         start_time = pygame.time.get_ticks()  # Start the timer for the attempt
 
